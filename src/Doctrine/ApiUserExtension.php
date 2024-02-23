@@ -30,5 +30,16 @@ final class ApiUserExtension implements QueryCollectionExtensionInterface, Query
         if (User::class !== $resourceClass) {
             return;
         }
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        if (null === $user) {
+            return;
+        }
+
+        if ($this->security->isGranted(User::ROLE_SUPER_ADMIN)) {
+            return;
+        }
     }
 }

@@ -32,7 +32,9 @@
         "symfony/yaml": "6.4.*"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.55"
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
+        "symfony/maker-bundle": "^1.55",
+        "zenstruck/foundry": "^1.36"
     },
     "config": {
         "allow-plugins": {

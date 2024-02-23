@@ -32,6 +32,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity('email', message: 'This email already exists!')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_COMPANY_ADMIN = 'ROLE_COMPANY_ADMIN';
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
+    public const ROLES = [
+        self::ROLE_USER,
+        self::ROLE_COMPANY_ADMIN,
+        self::ROLE_SUPER_ADMIN
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -69,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Groups(['user.read', 'user.write'])]
-    #[ApiProperty(example: 'ROLE_USER')]
+    #[ApiProperty(example: self::ROLE_USER)]
     private ?string $role = null;
 
     /**

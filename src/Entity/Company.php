@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post()
+        new Post(securityPostDenormalize: "is_granted('ROLE_SUPER_ADMIN')")
     ],
     normalizationContext: ['groups' => ['company.read']],
     denormalizationContext: ['groups' => ['company.write']],

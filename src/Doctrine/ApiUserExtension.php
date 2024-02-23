@@ -31,6 +31,8 @@ final class ApiUserExtension implements QueryCollectionExtensionInterface, Query
             return;
         }
 
+        $rootAlias = $queryBuilder->getRootAliases()[0];
+
         /** @var User $user */
         $user = $this->security->getUser();
 
@@ -40,6 +42,13 @@ final class ApiUserExtension implements QueryCollectionExtensionInterface, Query
 
         if ($this->security->isGranted(User::ROLE_SUPER_ADMIN)) {
             return;
+        }
+
+        // the company admin and users can only see the users from their own company
+        if ($this->security->isGranted(User::ROLE_COMPANY_ADMIN) ||
+            $this->security->isGranted(User::ROLE_USER)) {
+            $queryBuilder->andWhere(sprintf('%s.company = :company', $rootAlias));
+            $queryBuilder->setParameter('company', $user->getCompany());
         }
     }
 }

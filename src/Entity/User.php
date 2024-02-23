@@ -77,7 +77,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The user's role
      */
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
+    #[Assert\Sequentially([
+        new Assert\NotBlank,
+        new Assert\Choice(
+            choices: self::ROLES,
+            message: 'This is not a valid user\'s role.'
+        )
+    ])]
     #[Groups(['user.read', 'user.write'])]
     #[ApiProperty(example: self::ROLE_USER)]
     private ?string $role = null;

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
@@ -37,6 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         new Assert\Regex(pattern: '/[a-zA-Z\s]$/', message: "The name must contains letters and space.")
     ])]
     #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(default: 'Jane')]
     private ?string $name = null;
 
     /**
@@ -48,6 +50,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         new Assert\Email
     ])]
     #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(example: 'jane@doe.com')]
     private ?string $email = null;
 
     /**
@@ -56,6 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(example: 'ROLE_USER')]
     private ?string $role = null;
 
     /**
@@ -88,6 +92,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         ]
     )]
     #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(example: '/api/companies/1')]
     private ?Company $company = null;
 
     public function getId(): ?int

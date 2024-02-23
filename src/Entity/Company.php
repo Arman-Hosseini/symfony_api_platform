@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CompanyRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,9 +24,13 @@ class Company
     #[Groups(['company.read', 'company.write'])]
     private ?int $id = null;
 
+    /**
+     * @var string The company's name
+     */
     #[ORM\Column(length: 100, unique: true)]
     #[Assert\Length(min: 5, max: 100)]
     #[Groups(['company.read', 'company.write'])]
+    #[ApiProperty(example: 'Google')]
     private ?string $name = null;
 
     public function getId(): ?int

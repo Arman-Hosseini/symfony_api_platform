@@ -22,6 +22,7 @@ security:
             pattern: ^/api
             stateless: true
             jwt: ~
+            switch_user: { role: ROLE_SUPER_ADMIN, parameter: _switch_user }
 
     access_control:
         - { path: ^/api/login,      roles: PUBLIC_ACCESS }

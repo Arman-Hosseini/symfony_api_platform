@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(),
-        new Delete()
+        new Delete(security: "is_granted('ROLE_SUPER_ADMIN')")
     ],
     normalizationContext: ['groups' => ['user.read']],
     denormalizationContext: ['groups' => ['user.write']],

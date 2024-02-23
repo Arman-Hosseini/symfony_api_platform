@@ -9,9 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user.read']],
+    denormalizationContext: ['groups' => ['user.write']],
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity('email', message: 'This email already exists!')]
@@ -20,6 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user.read', 'user.write'])]
     private ?int $id = null;
 
     /**
@@ -31,6 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         new Assert\Regex(pattern: '/^[A-Z]/', message: "The name must start with a uppercase letter."),
         new Assert\Regex(pattern: '/[a-zA-Z\s]$/', message: "The name must contains letters and space.")
     ])]
+    #[Groups(['user.read', 'user.write'])]
     private ?string $name = null;
 
     /**
@@ -41,6 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         new Assert\NotBlank,
         new Assert\Email
     ])]
+    #[Groups(['user.read', 'user.write'])]
     private ?string $email = null;
 
     /**
@@ -48,12 +55,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
+    #[Groups(['user.read', 'user.write'])]
     private ?string $role = null;
 
     /**
      * @var string The user's plain password
      */
     #[Assert\NotBlank]
+    #[Groups(['user.write'])]
     private ?string $plainPassword = null;
 
     /**
@@ -78,6 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             new Assert\NotBlank(message: 'The user with this role must have a company.')
         ]
     )]
+    #[Groups(['user.read', 'user.write'])]
     private ?Company $company = null;
 
     public function getId(): ?int

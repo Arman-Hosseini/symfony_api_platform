@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
@@ -9,9 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user.read']],
+    denormalizationContext: ['groups' => ['user.write']],
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity('email', message: 'This email already exists!')]
@@ -20,6 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user.read', 'user.write'])]
     private ?int $id = null;
 
     /**
@@ -31,6 +37,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         new Assert\Regex(pattern: '/^[A-Z]/', message: "The name must start with a uppercase letter."),
         new Assert\Regex(pattern: '/[a-zA-Z\s]$/', message: "The name must contains letters and space.")
     ])]
+    #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(default: 'Jane')]
     private ?string $name = null;
 
     /**
@@ -41,6 +49,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         new Assert\NotBlank,
         new Assert\Email
     ])]
+    #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(example: 'jane@doe.com')]
     private ?string $email = null;
 
     /**
@@ -48,12 +58,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
+    #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(example: 'ROLE_USER')]
     private ?string $role = null;
 
     /**
      * @var string The user's plain password
      */
     #[Assert\NotBlank]
+    #[Groups(['user.write'])]
     private ?string $plainPassword = null;
 
     /**
@@ -78,6 +91,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             new Assert\NotBlank(message: 'The user with this role must have a company.')
         ]
     )]
+    #[Groups(['user.read', 'user.write'])]
+    #[ApiProperty(example: '/api/companies/1')]
     private ?Company $company = null;
 
     public function getId(): ?int

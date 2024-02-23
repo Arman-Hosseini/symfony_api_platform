@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -18,24 +19,56 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * @var string The user's name
+     */
+    #[ORM\Column(length: 100)]
+    private ?string $name = null;
+
+    /**
+     * @var string The user's email
+     */
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
     /**
-     * @var list<string> The user roles
+     * @var string The user's role
      */
-    #[ORM\Column]
-    private array $roles = [];
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $role = null;
 
     /**
-     * @var string The hashed password
+     * @var string The user's plain password
+     */
+    private ?string $plainPassword = null;
+
+    /**
+     * @var string The user's hashed password
      */
     #[ORM\Column]
     private ?string $password = null;
 
+    /**
+     * @var Company|null The user's company
+     */
+    #[ORM\ManyToOne]
+    private ?Company $company = null;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -51,9 +84,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
+     * @return string Returns the identifier for this user.
      */
     public function getUserIdentifier(): string
     {
@@ -61,32 +92,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see UserInterface
-     *
-     * @return list<string>
+     * @return string[] Returns the roles granted to the user.
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return [$this->role];
     }
 
-    /**
-     * @param list<string> $roles
-     */
-    public function setRoles(array $roles): static
+    public function getRole(): ?string
     {
-        $this->roles = $roles;
+        return $this->role;
+    }
+
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
 
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
     public function getPassword(): string
     {
         return $this->password;
@@ -100,11 +136,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see UserInterface
+     * @return void Removes sensitive data from the user.
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
+
+        return $this;
     }
 }
